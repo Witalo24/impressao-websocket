@@ -52,8 +52,6 @@ function formatarLinhaProduto(pro) {
     return `${String(pro.descricao_produto).padEnd(5)} | ${String(pro.quantidade + " UN").padStart(5)} | ${String(formatarValor(pro.preco_unitario)).padStart(5)} | ${String(formatarValor(pro.valor_produto)).padStart(5)}`;
 }
 
-
-
 function formatarData(dataISO) {
     const data = new Date(dataISO);
     return data.toLocaleString("pt-BR", {
@@ -65,8 +63,6 @@ function formatarData(dataISO) {
         minute: "2-digit"
     });
 }
-
-
 
 // Função para gerar cupom de venda
 function gerarCupomVenda(dados) {
@@ -109,20 +105,6 @@ VENDEDOR: ${dados.vendedor || 'NÃO INFORMADO'}
 
 // Função para gerar cupom de pagamento
 function gerarCupomPagamento(dados) {
-
-const dados = {
-    saldoContaCliente: 600,
-    nomeCliente:"Witalo Pereira dos Santos",
-    data_pagamento:'2025-05-30T14:18:46.000Z',
-    valorPagamento: 500,
-    valorContaAposPagamento: 100,
-    vendedor: "admin",
-    faturas:[
-        {codigoFatura: 101215, desc:"Quitacao de fatura", valorPago: 300},
-        {codigoFatura: 101215, desc:"Haver", valorPago: 200} 
-    ],
-     
-}
     return `
 ==============================================
  A N S E L M O  M O T O  E  A U T O  P E Ç A S
@@ -135,7 +117,6 @@ FONE: (99) 98447-4844
 ----------------------------------------------
 CLIENTE: ${dados.nomeCliente}
 ----------------------------------------------
-
 ----------------------------------------------
 RESUMO FINANCEIRO
 ----------------------------------------------
@@ -143,7 +124,7 @@ QUANTIDADE ITENS: ${dados.produtos.length}
 TOTAL: R$ ${formatarValor(dados.valorFatura)}
 DESCONTO: R$ ${formatarValor(dados.desconto)}
 ENTRADA: R$ ${formatarValor(dados.entrada)}
-VALOR FINAL: R$ ${formatarValor(valorFatura - (desconto + entrada))}
+VALOR FINAL: R$ ${formatarValor(dados.valorFatura - (desconto + entrada))}
 ----------------------------------------------
 VENDEDOR: ${dados.vendedor || 'NÃO INFORMADO'}
 ==============================================

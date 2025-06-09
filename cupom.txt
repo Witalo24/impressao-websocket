@@ -6,23 +6,22 @@ CNPJ: 05.771.085/001-25  IE: 12.207.801-2
 RUA DUQUE DE CAXIAS, 385 BURITI BRAVO - MA
 FONE: (99) 98447-4844
 ==============================================
-FATURA: 100476  DATA: 30/05/2025, 11:18
+FATURA: 100732  DATA: 09/06/2025, 08:50
 ----------------------------------------------
 CLIENTE: VENDA A VISTA 
 ----------------------------------------------
 DESCRIÇÃO       | QTD   |  UNIT  |   TOTAL
 ----------------------------------------------
-LAMPADA FAROL H4 12 V 35/35  |  1 UN | 35,00 | 35,00
-OLEO LUBRIFICANTE 20W-50 LUBRAX |  4 UN | 30,00 | 120,00
-FILTRO DE OLEO W7125/PSL560 |  1 UN | 22,00 | 22,00
+GUIDAO POP110 16-18 |  1 UN | 100,00 | 100,00
+PEDALEIRA UNIVERSAL |  2 UN |  9,00 | 18,00
 ----------------------------------------------
 RESUMO FINANCEIRO
 ----------------------------------------------
-QUANTIDADE ITENS: 3
-TOTAL: R$ 177,00
-DESCONTO: R$ 10,00
+QUANTIDADE ITENS: 2
+TOTAL: R$ 118,00
+DESCONTO: R$ 0,00
 ENTRADA: R$ 0,00
-VALOR FINAL: R$ 167,00
+VALOR FINAL: R$ 118,00
 ----------------------------------------------
 VENDEDOR: admin
 ==============================================
