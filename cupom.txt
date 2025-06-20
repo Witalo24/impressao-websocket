@@ -6,22 +6,22 @@ CNPJ: 05.771.085/001-25  IE: 12.207.801-2
 RUA DUQUE DE CAXIAS, 385 BURITI BRAVO - MA
 FONE: (99) 98447-4844
 ==============================================
-FATURA: 100732  DATA: 09/06/2025, 08:50
+FATURA: 101026  DATA: 20/06/2025, 08:40
 ----------------------------------------------
 CLIENTE: VENDA A VISTA 
 ----------------------------------------------
 DESCRIÇÃO       | QTD   |  UNIT  |   TOTAL
 ----------------------------------------------
-GUIDAO POP110 16-18 |  1 UN | 100,00 | 100,00
-PEDALEIRA UNIVERSAL |  2 UN |  9,00 | 18,00
+CABO VELOCIMETRO POP 100 13 A 15 / POP110 15 A 2022 MHX |  1 UN | 13,00 | 13,00
+ADITIVO P/RADIADOR ORBI  QUIMICA 1L |  1 UN | 10,00 | 10,00
 ----------------------------------------------
 RESUMO FINANCEIRO
 ----------------------------------------------
 QUANTIDADE ITENS: 2
-TOTAL: R$ 118,00
+TOTAL: R$ 23,00
 DESCONTO: R$ 0,00
 ENTRADA: R$ 0,00
-VALOR FINAL: R$ 118,00
+VALOR FINAL: R$ 23,00
 ----------------------------------------------
 VENDEDOR: admin
 ==============================================
