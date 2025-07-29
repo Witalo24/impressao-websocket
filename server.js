@@ -4,7 +4,6 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const WS_PORT = 8080;
-const caminhoCupom = "C:\\impressao\\cupom.txt";
 
 // Criar servidor WebSocket
 const wss = new WebSocket.Server({ port: WS_PORT });
@@ -15,7 +14,6 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         try {
             const dadosCupom = JSON.parse(message);
-            console.log(dadosCupom);
 
             let impressaoTexto;
             switch (dadosCupom.tipo) {
@@ -42,14 +40,33 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Função para formatar valores corretamente
 function formatarValor(valor) {
     return Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 }
 
-// Função para formatar cada linha do cupom de forma mais organizada
+function truncarTexto(texto, limite) {
+    texto = String(texto);
+    return texto.length > limite ? texto.substring(0, limite - 1) + '…' : texto;
+}
+
+function alinharExtremos(esquerda, direita, larguraTotal = 46) {
+    esquerda = String(esquerda).trim();
+    direita = String(direita).trim();
+    const espacos = larguraTotal - esquerda.length - direita.length;
+
+    if (espacos < 1) {
+        return esquerda.substring(0, larguraTotal - direita.length - 1) + ' ' + direita;
+    }
+
+    return esquerda + ' '.repeat(espacos) + direita;
+}
+
 function formatarLinhaProduto(pro) {
-    return `${String(pro.descricao_produto).padEnd(5)} | ${String(pro.quantidade + " UN").padStart(5)} | ${String(formatarValor(pro.preco_unitario)).padStart(5)} | ${String(formatarValor(pro.valor_produto)).padStart(5)}`;
+    const nome = truncarTexto(pro.descricao_produto, 20).padEnd(20);
+    const qtd = String(pro.quantidade + " UN").padStart(6);
+    const unit = formatarValor(pro.preco_unitario).padStart(10);
+    const total = formatarValor(pro.valor_produto).padStart(10);
+    return `${nome}${qtd}${unit}${total}`;
 }
 
 function formatarData(dataISO) {
@@ -64,7 +81,6 @@ function formatarData(dataISO) {
     });
 }
 
-// Função para gerar cupom de venda
 function gerarCupomVenda(dados) {
     const entrada = Number(dados.entrada);
     const desconto = Number(dados.desconto);
@@ -84,17 +100,17 @@ FATURA: ${dados.codigoFatura}  DATA: ${formatarData(dados.data_compra)}
 ----------------------------------------------
 CLIENTE: ${dados.nomeCliente}
 ----------------------------------------------
-DESCRIÇÃO       | QTD   |  UNIT  |   TOTAL
+DESCRIÇÃO           QTD    UNIT      TOTAL
 ----------------------------------------------
 ${produtosFormatados}
 ----------------------------------------------
 RESUMO FINANCEIRO
 ----------------------------------------------
-QUANTIDADE ITENS: ${dados.produtos.length}
-TOTAL: R$ ${formatarValor(dados.valorFatura)}
-DESCONTO: R$ ${formatarValor(dados.desconto)}
-ENTRADA: R$ ${formatarValor(dados.entrada)}
-VALOR FINAL: R$ ${formatarValor(valorFatura - (desconto + entrada))}
+${alinharExtremos('QUANTIDADE ITENS:', dados.produtos.length)}
+${alinharExtremos('TOTAL:', `R$ ${formatarValor(dados.valorFatura)}`)}
+${alinharExtremos('DESCONTO:', `R$ ${formatarValor(dados.desconto)}`)}
+${alinharExtremos('ENTRADA:', `R$ ${formatarValor(dados.entrada)}`)}
+${alinharExtremos('VALOR FINAL:', `R$ ${formatarValor(valorFatura - (desconto + entrada))}`)}
 ----------------------------------------------
 VENDEDOR: ${dados.vendedor || 'NÃO INFORMADO'}
 ==============================================
@@ -103,8 +119,11 @@ VENDEDOR: ${dados.vendedor || 'NÃO INFORMADO'}
 `;
 }
 
-// Função para gerar cupom de pagamento
 function gerarCupomPagamento(dados) {
+    const valorPago = Number(dados.totalPago);
+    const saldoDevedor = Number(dados.saldoDevedor);
+    console.log(dados)
+
     return `
 ==============================================
  A N S E L M O  M O T O  E  A U T O  P E Ç A S
@@ -113,47 +132,41 @@ CNPJ: 05.771.085/001-25  IE: 12.207.801-2
 RUA DUQUE DE CAXIAS, 385 BURITI BRAVO - MA
 FONE: (99) 98447-4844
 ==============================================
- PAGAMENTO DE CONTA
+                ✓ CONFIRMADO
+==============================================
+        COMPROVANTE DE PAGAMENTO
+----------------------------------------------
+DATA: ${formatarData(dados.contas[0].data_hora)}
+EMITIDO POR: ${dados.empresa || 'ANSELMO MOTO E AUTO PEÇAS'}
 ----------------------------------------------
 CLIENTE: ${dados.nomeCliente}
 ----------------------------------------------
+${alinharExtremos('VALOR PAGO:', `R$ ${formatarValor(valorPago)}`)}
+${alinharExtremos('SALDO DEVEDOR:', `R$ ${formatarValor(saldoDevedor)}`)}
 ----------------------------------------------
-RESUMO FINANCEIRO
+FORMA DE PAGAMENTO: ${dados.formaPagamento || 'NÃO INFORMADA'}
 ----------------------------------------------
-QUANTIDADE ITENS: ${dados.produtos.length}
-TOTAL: R$ ${formatarValor(dados.valorFatura)}
-DESCONTO: R$ ${formatarValor(dados.desconto)}
-ENTRADA: R$ ${formatarValor(dados.entrada)}
-VALOR FINAL: R$ ${formatarValor(dados.valorFatura - (desconto + entrada))}
-----------------------------------------------
-VENDEDOR: ${dados.vendedor || 'NÃO INFORMADO'}
+${saldoDevedor > 0 ? `⚠ ATENÇÃO: Saldo pendente de R$ ${formatarValor(saldoDevedor)}` : ''}
 ==============================================
-     OBRIGADO PELA PREFERÊNCIA
+     OBRIGADO POR PREFERIR NOSSOS SERVIÇOS!
 ==============================================
 `;
 }
 
-// Função para salvar o cupom e imprimir via PowerShell
 function imprimirCupom(texto, ws) {
     console.log(texto);
 
-    // Salvar o cupom no arquivo
-    fs.writeFileSync(caminhoCupom, texto, 'utf8');
-
-    console.log(`Cupom salvo em: ${caminhoCupom}`);
-
-    // Comando PowerShell para imprimir via Notepad
-    const powerShellCommand = `powershell.exe -Command "Start-Process notepad.exe -ArgumentList '/p ${caminhoCupom}'"`;
-
-    exec(powerShellCommand, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Erro ao imprimir: ${error.message}`);
-            ws.send(`Erro ao imprimir: ${error.message}`);
-            return;
-        }
-        console.log("Impressão enviada com sucesso!");
-        ws.send("Impressão enviada com sucesso!");
-    });
+    // fs.writeFileSync(caminhoCupom, texto, 'utf8');
+    // const powerShellCommand = `powershell.exe -Command "Start-Process notepad.exe -ArgumentList '/p ${caminhoCupom}'"`;
+    // exec(powerShellCommand, (error, stdout, stderr) => {
+    //     if (error) {
+    //         console.error(`Erro ao imprimir: ${error.message}`);
+    //         ws.send(`Erro ao imprimir: ${error.message}`);
+    //         return;
+    //     }
+    //     console.log("Impressão enviada com sucesso!");
+    //     ws.send("Impressão enviada com sucesso!");
+    // });
 }
 
 console.log(`Servidor WebSocket do cliente rodando em ws://localhost:${WS_PORT}`);
