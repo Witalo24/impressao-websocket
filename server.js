@@ -4,6 +4,8 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const WS_PORT = 8080;
+const caminhoCupom = path.join(__dirname, 'cupom.txt');
+
 
 // Criar servidor WebSocket
 const wss = new WebSocket.Server({ port: WS_PORT });
@@ -49,7 +51,7 @@ function truncarTexto(texto, limite) {
     return texto.length > limite ? texto.substring(0, limite - 1) + '…' : texto;
 }
 
-function alinharExtremos(esquerda, direita, larguraTotal = 46) {
+function alinharExtremos(esquerda, direita, larguraTotal = 40) {
     esquerda = String(esquerda).trim();
     direita = String(direita).trim();
     const espacos = larguraTotal - esquerda.length - direita.length;
@@ -106,7 +108,7 @@ ${produtosFormatados}
 ----------------------------------------------
 RESUMO FINANCEIRO
 ----------------------------------------------
-${alinharExtremos('QUANTIDADE ITENS:', dados.produtos.length)}
+QUANTIDADE ITENS: ${dados.produtos.length}
 ${alinharExtremos('TOTAL:', `R$ ${formatarValor(dados.valorFatura)}`)}
 ${alinharExtremos('DESCONTO:', `R$ ${formatarValor(dados.desconto)}`)}
 ${alinharExtremos('ENTRADA:', `R$ ${formatarValor(dados.entrada)}`)}
@@ -156,17 +158,17 @@ ${saldoDevedor > 0 ? `⚠ ATENÇÃO: Saldo pendente de R$ ${formatarValor(saldoD
 function imprimirCupom(texto, ws) {
     console.log(texto);
 
-    // fs.writeFileSync(caminhoCupom, texto, 'utf8');
-    // const powerShellCommand = `powershell.exe -Command "Start-Process notepad.exe -ArgumentList '/p ${caminhoCupom}'"`;
-    // exec(powerShellCommand, (error, stdout, stderr) => {
-    //     if (error) {
-    //         console.error(`Erro ao imprimir: ${error.message}`);
-    //         ws.send(`Erro ao imprimir: ${error.message}`);
-    //         return;
-    //     }
-    //     console.log("Impressão enviada com sucesso!");
-    //     ws.send("Impressão enviada com sucesso!");
-    // });
+    fs.writeFileSync(caminhoCupom, texto, 'utf8');
+    const powerShellCommand = `powershell.exe -Command "Start-Process notepad.exe -ArgumentList '/p ${caminhoCupom}'"`;
+    exec(powerShellCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Erro ao imprimir: ${error.message}`);
+            ws.send(`Erro ao imprimir: ${error.message}`);
+            return;
+        }
+        console.log("Impressão enviada com sucesso!");
+        ws.send("Impressão enviada com sucesso!");
+    });
 }
 
 console.log(`Servidor WebSocket do cliente rodando em ws://localhost:${WS_PORT}`);
